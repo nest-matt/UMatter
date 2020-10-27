@@ -1,7 +1,7 @@
 from .base import Response
 from app.utils import mm_wrapper
 from flask import make_response
-from app import select_feed_channel, generate_md_table, logger, WEEKLY_THRESHOLD
+from app import select_feed_channel, generate_md_table, logger, WEEKLY_THRESHOLD, SLASH_NAME
 import re, datetime
 
 REGEX_TOP_POINTS = re.compile(r"top peers ([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])) ([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))")
@@ -21,9 +21,9 @@ class Top(Response):
     @classmethod
     def help(self):
         help_str = "The format for getting top peers is as follows \n"  + \
-                   "`/umatter top peers start_date end_date`\n" + \
+                   f"`{SLASH_NAME} top peers start_date end_date`\n" + \
                     "start_date and end_date to be in `yyyy-mm-dd` format. \n" + \
-                    "For ex. `/umatter top peers 2020-02-12 2020-02-24`"
+                    f"For ex. `{SLASH_NAME} top peers 2020-02-12 2020-02-24`"
         return help_str
 
     def check_private_chat(self):
@@ -48,7 +48,7 @@ class Top(Response):
         if date1 >= date2:
             logger.warning("From Date greater than To Date")
             return "> To Date should be greater than From Date \n" + \
-                   "For help, issue `/umatter help`"
+                   "For help, issue `{app.MM_SLASH_NAME} help`"
         flag = False
         if (date2 - date1).days == 7:
             logger.debug("Date range of 7 days chosen")
@@ -74,9 +74,9 @@ class Top(Response):
 
         table = generate_md_table(res_list, ["Medal", "Peer Name", "Points Total"])
         if flag:
-            text_msg = f"Top Peers Distribution for the channel **{self.transObj.channel_name}** who have cumulative sum of points greater than **{WEEKLY_THRESHOLD}** (weekly threshold), from **{str_date1}** to **{str_date2}** is as follows \n\n {table}"
+            text_msg = u"Top Peers Distribution for the channel **{0}** who have cumulative sum of points greater than **{1}** (weekly threshold), from **{2}** to **{3}** is as follows \n\n{4}".format(self.transObj.channel_name, WEEKLY_THRESHOLD, str_date1, str_date2, table )
         else:
-            text_msg = f"Top Peers Distribution for the channel **{self.transObj.channel_name}** from **{str_date1}** to **{str_date2}** is as follows \n\n {table}"
+            text_msg = u"Top Peers Distribution for the channel **{0}** from **{1}** to **{2}** is as follows \n\n{3}".format(self.transObj.channel_name, str_date1, str_date2, table )
 
         result = {
             "attachments":[{

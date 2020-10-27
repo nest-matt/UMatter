@@ -1,5 +1,5 @@
 from .base import Response
-from app import logger, select_feed_channel_stats, make_plot
+from app import logger, select_feed_channel_stats, make_plot, SLASH_NAME
 from app.utils import mm_wrapper
 from flask import make_response
 import re, datetime
@@ -21,9 +21,9 @@ class Channel(Response):
     @classmethod
     def help(self):
         help_str = "The format for getting channel statistics is as follows \n"  + \
-                   "`/umatter channel stats start_date end_date`\n" + \
+                   f"`{SLASH_NAME} channel stats start_date end_date`\n" + \
                     "start_date and end_date to be in `yyyy-mm-dd` format. \n" + \
-                    "For ex. `/umatter channel stats 2020-02-12 2020-02-24`"
+                    f"For ex. `{SLASH_NAME} channel stats 2020-02-12 2020-02-24`"
         return help_str
     
     def check_private_chat(self):
@@ -50,7 +50,7 @@ class Channel(Response):
         if date1 >= date2:
             logger.warning("From Date greater than To Date")
             return "> To Date should be greater than From Date \n" + \
-                   "For help, issue `/umatter help`"
+                   f"For help, issue `{SLASH_NAME} help`"
         
         query = select_feed_channel_stats(self.transObj.channel_id, date1, date2)
 
@@ -73,7 +73,7 @@ class Channel(Response):
                 k = i["emoji_name"]
                 emoji_dist[f":{k}: {k}"] += 1
 
-        message = f"Channel Statistics from **{str_date1}** to **{str_date2}** for the channel **{self.transObj.channel_name}** \n "
+        message = f"Channel Statistics from **{str_date1}** to **{str_date2}** for the channel **{self.transObj.channel_name}** \n"
         message += f"Total Appreciation Post Count - {len(res)}\n"
 
         if emoji_dist:

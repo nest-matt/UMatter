@@ -8,6 +8,6 @@ CREATE TABLE `transaction`(
   `to_user_id` varchar(100) DEFAULT NULL,
   `to_user_name` varchar(100) DEFAULT NULL,
   `post_id` varchar(100) DEFAULT NULL,
-  `insertionTime` timestamp NULL DEFAULT NULL,
+  `insertiontime` timestamp NULL DEFAULT NULL,
   `message` varchar(100) DEFAULT NULL
 );

@@ -1,5 +1,5 @@
 from app.models import transaction
-from app import generate_blob, DAILY_POINT_LIMIT, PER_TRANSACTION_POINT_LIMIT, logger
+from app import generate_blob, DAILY_POINT_LIMIT, PER_TRANSACTION_POINT_LIMIT, logger, SLASH_NAME
 from app.utils import mm_wrapper
 from .base import Response
 import re
@@ -26,9 +26,9 @@ class Appreciation(Response):
 
     @classmethod
     def help(self):
-        help_str = "In order to appreciate your peer, please follow the following format \n\n" + \
-                   "1. `/umatter @username ++ for helping me out` ---> one point appreciation \n" + \
-                   "2. `/umatter @username 3++ for writing the test suite` ---> more points appreciation"
+        help_str = f"In order to appreciate your peer, please follow the following format \n\n" + \
+                   f"1. `{SLASH_NAME} @username ++ for helping me out` ---> one point appreciation \n" + \
+                   f"2. `{SLASH_NAME} @username 3++ for writing the test suite` ---> more points appreciation"
         return help_str
 
     def check_format(self):
@@ -70,7 +70,7 @@ class Appreciation(Response):
             logger.info("More than %s points given. Invalidating request", PER_TRANSACTION_POINT_LIMIT)
             return "You can give max {} points at a time".format(PER_TRANSACTION_POINT_LIMIT)
 
-        flag, curr_points = self.transObj.execute_select_check_sum("select sum(points) as day_total from transaction where from_user_id=\""+self.transObj.from_user_id + "\" and date(insertionTime)=CURDATE();")
+        flag, curr_points = self.transObj.execute_select_check_sum("select sum(points) as day_total from transaction where from_user_id='"+self.transObj.from_user_id + "' and date(insertiontime)=NOW();")
 
         if not flag:
             return "Problem in the application server. Please contact system admin"
@@ -80,13 +80,16 @@ class Appreciation(Response):
             logger.info("Daily Limit of %s crossed", DAILY_POINT_LIMIT)
             return "Sorry!! You have exceeded your quota of points for today. Your Remaining points for today - {}".format(DAILY_POINT_LIMIT - curr_points)
         
-        appr_post = generate_blob(f"{to_user_name} awarded {points} points")
+        points_txt = 'points'
+        if points is 1: points_txt = 'point'
+
+        appr_post = generate_blob(f"@{to_user_name}\nawarded {points} {points_txt}")
 
         flag, file_id = mm_wrapper.upload_file(self.transObj.channel_id, appr_post)
         if not flag:
             return "Looks like there is a server problem. Please contact system admin. Sorry for the inconvience"
         
-        flag, post_id, ts_created = mm_wrapper.create_post(f"@{to_user_name} awarded {points} points by @{self.transObj.from_user_name} \n {'**Message**: '+message if message else ''}", file_id, self.transObj.channel_id)
+        flag, post_id, ts_created = mm_wrapper.create_post(f"@{to_user_name} awarded {points} {points_txt} by @{self.transObj.from_user_name} \n{'**Message**: '+message if message else ''}", file_id, self.transObj.channel_id)
 
         if not flag:
             return "Looks like there is a server problem. Please contact system admin. Sorry for the inconvience"
@@ -100,7 +103,7 @@ class Appreciation(Response):
             "to_user_id": to_user_id,
             "to_user_name": to_user_name,
             "post_id": post_id,
-            "insertionTime": ts_created,
+            "insertiontime": ts_created,
             "user_id": self.transObj.from_user_id,
             "message": message
         }

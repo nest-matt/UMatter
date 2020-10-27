@@ -7,6 +7,7 @@ from textwrap import wrap
 from app import INSERT_QUERY_STRING, color_list, WEEKLY_THRESHOLD, logger
 import os, requests, random
 import matplotlib
+from random import randrange
 from matplotlib import pyplot as plt
 from io import BytesIO
 from pytablewriter import MarkdownTableWriter
@@ -17,9 +18,14 @@ from PIL import ImageFont
 
 matplotlib.use('agg')
 dir_path = os.path.dirname(os.path.realpath(__file__))
-FONT_PATH = os.path.join(os.path.abspath(os.path.join(dir_path, os.pardir)), 'resources/CANDY.TTF')
-IMAGE_PATH = os.path.join(os.path.abspath(os.path.join(dir_path, os.pardir)), 'resources/star.png')
-font = ImageFont.truetype(FONT_PATH, 150)
+FONT_PATH = os.path.join(os.path.abspath(os.path.join(dir_path, os.pardir)), 'resources/Futura-Md-BT-Medium-400.ttf')
+#IMAGE_PATH = os.path.join(os.path.abspath(os.path.join(dir_path, os.pardir)), 'resources/tec-thumb.png')
+font = ImageFont.truetype(FONT_PATH, 80)
+
+images = []
+imagepath = os.path.join(os.path.abspath(os.path.join(dir_path, os.pardir)), 'resources/appreciation/')
+for image in os.listdir(imagepath):                
+    images.append(os.path.join(imagepath,image))
 
 # def generate_blob(text):
 #     with Image(width=320, height=200, background=(Color('lightblue'))) as image:
@@ -28,11 +34,36 @@ font = ImageFont.truetype(FONT_PATH, 150)
 # , fill=(0,0,0,0)
 
 def generate_blob(text):
+
+    random_index = randrange(len(images))
+    IMAGE_PATH = images[random_index]
+    print(random_index, IMAGE_PATH)
+
     pattern = Image.open(IMAGE_PATH, "r").convert('RGBA')
-    wrapper = textwrap.TextWrapper(width=20)
+    max_w = pattern.width
+    max_h = pattern.height
+
     draw = ImageDraw.Draw(pattern, 'RGBA')
-    word_list = wrapper.wrap(text=text) 
-    draw.text((600,800), '\n'.join(word_list), fill=(191, 63, 63), font=font)
+    current_h, pad = 800, 0
+
+    lines = text.split('\n')
+    wrapper = textwrap.TextWrapper(width=25)
+    if len(lines) is 1:
+        word_list = wrapper.wrap(text=text)
+    else :
+        line = lines[0]
+        lines.pop(0)
+        word_list = wrapper.wrap(text=''.join(lines))
+        w, h = draw.textsize(line, font=font)
+        draw.text(((max_w - w) / 2, current_h), line, fill=(0, 0, 0), font=font)
+        current_h += h + pad
+
+    for line in word_list:
+        w, h = draw.textsize(line, font=font)
+        draw.text(((max_w - w) / 2, current_h), line, fill=(0, 0, 0), font=font)
+        current_h += h + pad
+
+    #draw.text((50,900), '\n'.join(word_list), fill=(0, 0, 0), font=font)
     imgByteArr = BytesIO()
     pattern.save(imgByteArr, format='png')
     return imgByteArr.getvalue()
@@ -62,34 +93,34 @@ def make_plot(label, size,title):
     return buf.read()
 
 def build_insert_query(data):
-    query_string = INSERT_QUERY_STRING % (data['channel_id'], data['channel_name'], data['from_user_id'], data['from_user_name'], data['points'], data['to_user_id'], data['to_user_name'], data['post_id'], data['insertionTime'], data['message'])
+    query_string = INSERT_QUERY_STRING % (data['channel_id'], data['channel_name'], data['from_user_id'], data['from_user_name'], data['points'], data['to_user_id'], data['to_user_name'], data['post_id'], data['insertiontime'], data['message'])
     return query_string
 
 def select_feed_user_query(user_id, channel_name=None, limit=None, orderby=False):
-    query_string = f'select * from transaction where (from_user_id="{user_id}" or to_user_id="{user_id}")'
+    query_string = f'select * from transaction where (from_user_id=\'{user_id}\' or to_user_id=\'{user_id}\')'
     if channel_name:
-        query_string = f'{query_string} and channel_name="{channel_name}"'
+        query_string = f'{query_string} and channel_name=\'{channel_name}\''
     if orderby:
-        query_string = f'{query_string} order by insertionTime'
+        query_string = f'{query_string} order by insertiontime'
     if limit:
         query_string = f'{query_string} limit {limit}'
     return query_string + ";"
 
 def select_feed_user_timebound(user_id, start_date, end_date):
-    query_string = f'select * from transaction where from_user_id="{user_id}" and date(insertionTime) >= "{start_date}" and date(insertionTime) <= "{end_date}";'
+    query_string = f'select * from transaction where from_user_id=\'{user_id}\' and date(insertiontime) >= \'{start_date}\' and date(insertiontime) <= \'{end_date}\';'
     return query_string
 
 def select_feed_channel(channel_id, start_date, end_date, is_week=False):
-    query_string = f'select to_user_name, sum(points) as sum_total, RANK() OVER(order by sum(points) desc) from transaction where channel_id="{channel_id}" and date(insertionTime) >= "{start_date}" and date(insertionTime) <= "{end_date}" group by to_user_name {"having sum_total > " + str(WEEKLY_THRESHOLD) if is_week else "" } order by sum_total desc;'
+    query_string = f'select to_user_name, sum(points) as sum_total, RANK() OVER(order by sum(points) desc) from transaction where channel_id=\'{channel_id}\' and date(insertiontime) >= \'{start_date}\' and date(insertiontime) <= \'{end_date}\' group by to_user_name {"having sum_total > " + str(WEEKLY_THRESHOLD) if is_week else "" } order by sum_total desc;'
     return query_string
 
 def select_feed_channel_stats(channel_id, start_date, end_date):
-    query_string = f'select * from transaction where channel_id="{channel_id}" and date(insertionTime) >= "{start_date}" and date(insertionTime) <= "{end_date}";'
+    query_string = f'select * from transaction where channel_id=\'{channel_id}\' and date(insertiontime) >= \'{start_date}\' and date(insertiontime) <= \'{end_date}\';'
     return query_string
 
 def generate_md_table(data, headers):
     writer = MarkdownTableWriter()
     writer.headers = headers
-    writer.column_styles = [Style(align="center", font_weight="bold")] * len(headers)
+    # writer.column_styles = [Style(align="center", font_weight="bold")] * len(headers)
     writer.value_matrix = data
     return writer.dumps()

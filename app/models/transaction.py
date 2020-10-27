@@ -1,4 +1,4 @@
-from app import mysql, build_insert_query, logger
+from app import db, build_insert_query, logger
 
 class Transaction:
 
@@ -12,9 +12,13 @@ class Transaction:
     def execute_select_check_sum(self, query):
         logger.debug("Running query %s for checking sum total points", query)
         try:
-            cursor = mysql.cursor()
+            cursor = db.cursor()
             cursor.execute(query)
-            return True, cursor.fetchone()["day_total"]
+            data = cursor.fetchone()
+            if not data :
+                return True, data["day_total"]
+            else :
+                return True, 0
         except Exception as e:
             logger.exception("Exception in getting the sum total for the day for the user.")
             return False, None
@@ -22,7 +26,7 @@ class Transaction:
     def execute_user_feed(self, query):
         logger.debug("Executing query %s", query)
         try:
-            cursor = mysql.cursor()
+            cursor = db.cursor()
             cursor.execute(query)
             return True, cursor.fetchall()
         except Exception as e:
@@ -30,15 +34,15 @@ class Transaction:
             return False, None
 
     def insert(self, data):
-        logger.debug("Inserting data to mysql")
+        logger.debug("Inserting data to db")
         try:
             query = build_insert_query(data)
-            cursor = mysql.cursor()
+            cursor = db.cursor()
             cursor.execute(query)
             # if res == 0:
             #     return False
-            mysql.commit()
+            db.commit()
             return True
         except Exception as e:
-            logger.exception("Exception in inserting data to the mysql server")
+            logger.exception("Exception in inserting data to the db server")
             return False

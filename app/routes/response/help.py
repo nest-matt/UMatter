@@ -1,5 +1,5 @@
 from .base import Response
-from app import logger
+from app import logger, SLASH_NAME
 from .appreciation import Appreciation
 from .top import Top
 from .user import User
@@ -31,5 +31,5 @@ class Help(Response):
     def response(self):
         if not self.check_format():
             logger.warning("Format incorrect for help")
-            return "Format incorrect for help. \n Example - /umatter help"
+            return f"Format incorrect for help. \n Example - {SLASH_NAME} help"
         return self.help()

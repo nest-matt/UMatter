@@ -1,5 +1,5 @@
 from .base import Response
-from app import select_feed_user_query, make_plot, generate_md_table, select_feed_user_timebound, logger
+from app import select_feed_user_query, make_plot, generate_md_table, select_feed_user_timebound, logger, SLASH_NAME
 from app.utils import mm_wrapper
 import re, datetime
 from flask import make_response
@@ -26,9 +26,9 @@ class User(Response):
     @classmethod
     def help(self):
         help_str = "Format for user related queries are as follows\n" + \
-            "1. `/umatter me stats` : \n This command let's you view statistics about yourself.\n" + \
-            "2. `/umatter me feed \"<channel_name>\"`: \nGives you the last 10 appreciation posts by and to you \n" + \
-            "3. `/umatter me points start_date end_date`: \n Gives you the appreciation points statistics in different channels received and given by you."
+            f"1. `{SLASH_NAME} me stats` : \nThis command let's you view statistics about yourself.\n" + \
+            f"2. `{SLASH_NAME} me feed \"<channel_name>\"`: \nGives you the last 10 appreciation posts by and to you \n" + \
+            f"3. `{SLASH_NAME} me points start_date end_date`: \nGives you the appreciation points statistics in different channels received and given by you."
         return help_str
 
     def user_stats(self):
@@ -71,7 +71,7 @@ class User(Response):
         ed_table = generate_md_table(emoji_dist.items(), ["Emoji Name", "Frequency Tagged"])
         res = {
             "attachments":[{
-                "text": f"### **Channel Posts** \n\n Number of appreciation posts where you are tagged \n\n  {cp_table} \n\n ### **Emoji Distribution** \n\n Emojis tagged to the appreciation posts by or to you \n\n{ed_table}",
+                "text": f"### **Channel Posts** \n\nNumber of appreciation posts where you are tagged \n\n  {cp_table} \n\n### **Emoji Distribution** \n\nEmojis tagged to the appreciation posts by or to you \n\n{ed_table}",
                 "fields":[{
                     "short":True,
                     "title":"User Name",
@@ -152,7 +152,7 @@ class User(Response):
         res_list = []
 
         for i in res:
-            res_list.append((i["channel_name"], i["points"], i["from_user_name"], i["insertionTime"]))
+            res_list.append((i["channel_name"], i["points"], i["from_user_name"], i["insertiontime"]))
         table = generate_md_table(res_list, ["Channel Name", "Points", "From Peer", "Timestamp"])
         result = {
             "attachments":[{

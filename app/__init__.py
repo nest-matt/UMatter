@@ -1,7 +1,8 @@
-import os, pymysql, logging, matplotlib, sys
+import os, pymysql, psycopg2, logging, matplotlib, sys
 from logging.handlers import RotatingFileHandler
 from flask import Flask
 from config import app_config
+from psycopg2 import extras
 from .utils.mattermostdriver import Driver
 
 config_name = os.getenv('FLASK_CONFIG', 'default')
@@ -27,14 +28,27 @@ handler.setFormatter(formatter)
 app.logger.addHandler(handler)
 
 try:
-	mysql = pymysql.connect(host=app_config.MYSQL_HOST,
-							port=app_config.MYSQL_PORT,
-							user=app_config.MYSQL_USER,
-							password=app_config.MYSQL_PASSWORD,
-							db=app_config.MYSQL_DB,
-							cursorclass=pymysql.cursors.DictCursor)
+	if (app_config.DB_TYPE == 'mysql'):
+		db = pymysql.connect(host=app_config.MYSQL_HOST,
+								port=app_config.MYSQL_PORT,
+								user=app_config.MYSQL_USER,
+								password=app_config.MYSQL_PASSWORD,
+								db=app_config.MYSQL_DB,
+								cursorclass=pymysql.cursors.DictCursor)
+	elif (app_config.DB_TYPE == 'postgresql'):
+		db = psycopg2.connect(host=app_config.PSQL_HOST,
+								port=app_config.PSQL_PORT,
+								user=app_config.PSQL_USER,
+								password=app_config.PSQL_PASSWORD,
+								dbname=app_config.PSQL_DB,
+								cursor_factory=psycopg2.extras.DictCursor)
+	else:
+		logger.critical("Not able to connect to database Server. Can't proceed further. Shutting down gracefully", exc_info=True)
+		sys.exit()
+
+
 except Exception as e:
-	logger.critical("Not able to connect to MySQL Server. Can't proceed further. Shutting down gracefully", exc_info=True)
+	logger.critical("Not able to connect to database Server. Can't proceed further. Shutting down gracefully", exc_info=True)
 	sys.exit()
 
 default_options = {
@@ -67,8 +81,10 @@ except Exception as e:
 DAILY_POINT_LIMIT = app_config.DAILY_POINT_LIMIT
 PER_TRANSACTION_POINT_LIMIT = app_config.PER_TRANSACTION_POINT_LIMIT
 
-INSERT_QUERY_STRING = "insert into transaction(channel_id, channel_name, from_user_id, from_user_name, points, to_user_id, to_user_name, post_id, insertionTime, message) values (\"%s\", \"%s\", \"%s\", \"%s\", %d, \"%s\", \"%s\", \"%s\", \"%s\", \"%s\");"
+INSERT_QUERY_STRING = "insert into transaction(channel_id, channel_name, from_user_id, from_user_name, points, to_user_id, to_user_name, post_id, insertiontime, message) values ('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s');"
 WEEKLY_THRESHOLD = app_config.WEEKLY_THRESHOLD
+
+SLASH_NAME = app_config.MM_SLASH_NAME
 
 from .utils.helpers import *
 

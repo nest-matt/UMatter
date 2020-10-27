@@ -2,6 +2,7 @@ flask
 matplotlib
 Pillow
 PyMySQL
+psycopg2
 pytablewriter
 requests
 tabledata

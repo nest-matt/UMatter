@@ -1,5 +1,5 @@
 from .base import Response
-from app import logger, download_image
+from app import logger, download_image, SLASH_NAME
 from app.utils import mm_wrapper
 from flask import make_response
 import re
@@ -20,9 +20,9 @@ class Value(Response):
     @classmethod
     def help(self):
         help_str = "Format for adding a value is as follows\n" + \
-                   "`/umatter value add \"value_name\" <image_url>`\n" + \
+                   f"`{SLASH_NAME} value add \"value_name\" <image_url>`\n" + \
                        "Ensure no special characters other than dot(.), dash(-), underscore(-) are in the value name. Supported image urls should end in png, jpg, jpeg, gif.\n" + \
-                           "For ex. `/umatter value add \"consistency\" http://<image_url>.png`"
+                           f"For ex. `{SLASH_NAME} value add \"consistency\" http://<image_url>.png`"
         return help_str
     
     def add_value(self):
