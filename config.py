@@ -66,8 +66,8 @@ class ProductionConfig(BaseConfig):
     MM_SCHEME = "http"
     MM_URL = "127.0.0.1"
     MM_PORT = 8065
-    MM_BOT_TOKEN = "gxor34guo7nfppe6dxbatwfzoh"
-    MM_SLASH_TOKEN = "xr9yxqr54ifsfxpxp66eynp7ty"
+    MM_BOT_TOKEN = "9majazffb3g3mjx7ueqr1ndhnw"
+    MM_SLASH_TOKEN = "uqar94q8f3njxcrqhah6wg7tgw"
     WEEKLY_THRESHOLD = 40
 
 class DevelopmentConfig(BaseConfig):
@@ -95,8 +95,8 @@ class DevelopmentConfig(BaseConfig):
     MM_SCHEME = "http"
     MM_URL = "localhost"
     MM_PORT = 8065
-    MM_BOT_TOKEN = "gxor34guo7nfppe6dxbatwfzoh"
-    MM_SLASH_TOKEN = "t5m9n8zq4jrstfc9k5tjbp66qc"
+    MM_BOT_TOKEN = "9majazffb3g3mjx7ueqr1ndhnw"
+    MM_SLASH_TOKEN = "uqar94q8f3njxcrqhah6wg7tgw"
     WEEKLY_THRESHOLD = 5
 
 class TestingConfig(BaseConfig):

@@ -20,7 +20,8 @@ matplotlib.use('agg')
 dir_path = os.path.dirname(os.path.realpath(__file__))
 FONT_PATH = os.path.join(os.path.abspath(os.path.join(dir_path, os.pardir)), 'resources/Futura-Md-BT-Medium-400.ttf')
 #IMAGE_PATH = os.path.join(os.path.abspath(os.path.join(dir_path, os.pardir)), 'resources/tec-thumb.png')
-font = ImageFont.truetype(FONT_PATH, 80)
+font = ImageFont.truetype(FONT_PATH, 70)
+FONT_LINEHEIGHT = 0
 
 images = []
 imagepath = os.path.join(os.path.abspath(os.path.join(dir_path, os.pardir)), 'resources/appreciation/')
@@ -44,7 +45,7 @@ def generate_blob(text):
     max_h = pattern.height
 
     draw = ImageDraw.Draw(pattern, 'RGBA')
-    current_h, pad = 800, 0
+    current_h, pad = 860, 0
 
     lines = text.split('\n')
     wrapper = textwrap.TextWrapper(width=25)
@@ -56,12 +57,12 @@ def generate_blob(text):
         word_list = wrapper.wrap(text=''.join(lines))
         w, h = draw.textsize(line, font=font)
         draw.text(((max_w - w) / 2, current_h), line, fill=(0, 0, 0), font=font)
-        current_h += h + pad
+        current_h += (h - FONT_LINEHEIGHT) + pad
 
     for line in word_list:
         w, h = draw.textsize(line, font=font)
         draw.text(((max_w - w) / 2, current_h), line, fill=(0, 0, 0), font=font)
-        current_h += h + pad
+        current_h += (h - FONT_LINEHEIGHT) + pad
 
     #draw.text((50,900), '\n'.join(word_list), fill=(0, 0, 0), font=font)
     imgByteArr = BytesIO()
