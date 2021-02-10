@@ -54,6 +54,17 @@ class Appreciation(Response):
             return "> Can't give points to yourself"
         
         flag, to_user_id = mm_wrapper.get_user_id(to_user_name)
+
+        flag_u, user = mm_wrapper.get_user(to_user_name)
+
+        image_name = "@" + to_user_name
+        # Check what username to go on the image
+        if len(user["nickname"]) != 0:
+            image_name = user["nickname"]
+        elif len(user["first_name"]) != 0 and len(user["last_name"]) != 0:
+            image_name = user["first_name"] + " " + user["last_name"][0]
+        elif len(user["first_name"]) != 0:
+            image_name = user["first_name"]
         
         if not flag:
             return "Thank you for the appreciation. Unfortunately, it looks like the user is not existing in the system. Please contact system admin"
@@ -83,7 +94,7 @@ class Appreciation(Response):
         points_txt = 'points'
         if points is 1: points_txt = 'point'
 
-        appr_post = generate_blob(f"@{to_user_name}\nawarded {points} {points_txt}")
+        appr_post = generate_blob(f"{image_name}\nawarded {points} {points_txt}")
 
         flag, file_id = mm_wrapper.upload_file(self.transObj.channel_id, appr_post)
         if not flag:

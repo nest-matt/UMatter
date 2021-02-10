@@ -38,7 +38,6 @@ def generate_blob(text):
 
     random_index = randrange(len(images))
     IMAGE_PATH = images[random_index]
-    print(random_index, IMAGE_PATH)
 
     pattern = Image.open(IMAGE_PATH, "r").convert('RGBA')
     max_w = pattern.width

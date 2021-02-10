@@ -3,13 +3,25 @@ import json, datetime
 from uuid import uuid4
 from io import BytesIO
 
-def get_user_id(user_name):
+def get_user_id(user_name, user_id_only=True):
     logger.debug("In getting user id")
     try:
         user = mm_client.users.get_user_by_username(user_name)
-        return True, user["id"]
+        user_resp = user["id"]
+        if not user_id_only:
+            user_resp = user
+        return True, user_resp
     except Exception as e:
         logger.exception("Exception in getting user id from mattermost server")
+        return False, None
+
+def get_user(user_name):
+    logger.debug("In getting user")
+    try:
+        flag, user = get_user_id(user_name, False)
+        return flag, user
+    except Exception as e:
+        logger.exception("Exception in getting user from mattermost server")
         return False, None
 
 def upload_file(channel_id, blob):
