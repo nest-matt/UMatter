@@ -94,7 +94,7 @@ class Appreciation(Response):
         points_txt = 'points'
         if points is 1: points_txt = 'point'
 
-        appr_post = generate_blob(f"{image_name}\nawarded {points} {points_txt}")
+        appr_post = generate_blob(f"{image_name}\nawarded {points} {points_txt}!")
 
         flag, file_id = mm_wrapper.upload_file(self.transObj.channel_id, appr_post)
         if not flag:
