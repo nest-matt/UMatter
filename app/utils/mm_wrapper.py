@@ -1,6 +1,6 @@
 from app import mm_client, logger
 import json, datetime
-from uuid import uuid4
+from time import time
 from io import BytesIO
 
 def get_user_id(user_name, user_id_only=True):
@@ -27,10 +27,12 @@ def get_user(user_name):
 def upload_file(channel_id, blob):
     logger.debug("in uploading file")
     try:
+        file_name = str(time()).split(".")[0]
         byte_obj = BytesIO(bytes(blob))
         form_data = {
             "channel_id": ('', channel_id),
-            "files": (f"{uuid4().hex}.png", byte_obj),
+            #"files": (f"umatter-{uuid4().hex}.png", byte_obj),
+            "files": (f"umatter-{file_name}.png", byte_obj),
         }
         upload_file_reply = mm_client.files.upload_file(form_data)
         return True, upload_file_reply["file_infos"][0]["id"]

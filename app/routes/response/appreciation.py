@@ -100,7 +100,7 @@ class Appreciation(Response):
         if not flag:
             return "Looks like there is a server problem. Please contact system admin. Sorry for the inconvience"
         
-        flag, post_id, ts_created = mm_wrapper.create_post(f"@{to_user_name} awarded {points} {points_txt} by @{self.transObj.from_user_name} \n{'**Message**: '+message if message else ''}", file_id, self.transObj.channel_id)
+        flag, post_id, ts_created = mm_wrapper.create_post(f"@{to_user_name} awarded {points} {points_txt} by @{self.transObj.from_user_name} \n{''+message if message else ''} \n \n", file_id, self.transObj.channel_id)
 
         if not flag:
             return "Looks like there is a server problem. Please contact system admin. Sorry for the inconvience"
