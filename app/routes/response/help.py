@@ -15,10 +15,10 @@ class Help(Response):
     
     def help(self):
         help_str =  "Welcome to umatter. Here's the list of available slash commands.\n"
-        help_str += "**Giving Appreciation** \n" + Appreciation.help() + "\n"
-        help_str += "**Top Peers in the channel** \n" + Top.help() + "\n"
-        help_str += "**Statistics about yourself** \n" + User.help() + "\n\n"
-        help_str += "**Adding a company value** \n" + Value.help() + "\n"
+        help_str += "**Giving Appreciation** \n" + Appreciation.help() + "\n \n"
+        help_str += "**Top Peers in the channel** \n" + Top.help() + "\n \n"
+        help_str += "**Statistics about yourself** \n" + User.help() + "\n \n"
+        # help_str += "**Adding a company value** \n" + Value.help() + "\n \n"
         help_str += "**Seeing the statistics of a Channel** \n" + Channel.help() + "\n"
         return help_str
 

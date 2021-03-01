@@ -28,7 +28,7 @@ class User(Response):
         help_str = "Format for user related queries are as follows\n" + \
             f"1. `{SLASH_NAME} me stats` : \nThis command let's you view statistics about yourself.\n" + \
             f"2. `{SLASH_NAME} me feed \"<channel_name>\"`: \nGives you the last 10 appreciation posts by and to you \n" + \
-            f"3. `{SLASH_NAME} me points start_date end_date`: \nGives you the appreciation points statistics in different channels received and given by you."
+            f"3. `{SLASH_NAME} me points start_date end_date`: \nGives you the appreciation points statistics in different channels received and given by you. \nstart_date and end_date to be in `yyyy-mm-dd` format."
         return help_str
 
     def user_stats(self):
