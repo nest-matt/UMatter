@@ -81,7 +81,7 @@ class Appreciation(Response):
             logger.info("More than %s points given. Invalidating request", PER_TRANSACTION_POINT_LIMIT)
             return "You can give max {} points at a time".format(PER_TRANSACTION_POINT_LIMIT)
 
-        flag, curr_points = self.transObj.execute_select_check_sum("select sum(points) as day_total from transaction where from_user_id='"+self.transObj.from_user_id + "' and date(insertiontime)=NOW();")
+        flag, curr_points = self.transObj.execute_select_check_sum("select sum(points) as day_total from transaction where from_user_id='"+self.transObj.from_user_id + "' and date(insertiontime)=date(NOW());")
 
         if not flag:
             return "Problem in the application server. Please contact system admin"

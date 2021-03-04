@@ -81,7 +81,7 @@ except Exception as e:
 DAILY_POINT_LIMIT = app_config.DAILY_POINT_LIMIT
 PER_TRANSACTION_POINT_LIMIT = app_config.PER_TRANSACTION_POINT_LIMIT
 
-INSERT_QUERY_STRING = "insert into transaction(channel_id, channel_name, from_user_id, from_user_name, points, to_user_id, to_user_name, post_id, insertiontime, message) values ('%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', '%s', '%s');"
+INSERT_QUERY_STRING = "insert into transaction(channel_id, channel_name, from_user_id, from_user_name, points, to_user_id, to_user_name, post_id, insertiontime, message) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
 WEEKLY_THRESHOLD = app_config.WEEKLY_THRESHOLD
 
 SLASH_NAME = app_config.MM_SLASH_NAME

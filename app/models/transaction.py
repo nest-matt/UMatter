@@ -1,4 +1,4 @@
-from app import db, build_insert_query, logger
+from app import db, build_insert_query, logger, INSERT_QUERY_STRING
 
 class Transaction:
 
@@ -36,9 +36,9 @@ class Transaction:
     def insert(self, data):
         logger.debug("Inserting data to db")
         try:
-            query = build_insert_query(data)
+            # query = build_insert_query(data)
             cursor = db.cursor()
-            cursor.execute(query)
+            cursor.execute(INSERT_QUERY_STRING, (data['channel_id'], data['channel_name'], data['from_user_id'], data['from_user_name'], data['points'], data['to_user_id'], data['to_user_name'], data['post_id'], data['insertiontime'], data['message']))
             # if res == 0:
             #     return False
             db.commit()
